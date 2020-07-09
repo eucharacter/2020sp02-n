@@ -17,7 +17,7 @@
 </head>
 
 <body>
-
+    <!--图片切换的slider部分-->
     <div class="slider" id="slider" style="--img-prev:url({% static 'images/0.jpg' %});height: 100vh">
         <div class="slider__content" id="slider-content">
             <div class="slider__images">
@@ -74,12 +74,13 @@
                 <div class="slider__nav-dot" data-id="4"></div>
             </div>
         </div>
+        <!--下一页按钮-->
         <button id="routeBtn" onclick="window.location.href='/camera'"></button>
     </div>
 
 
 
-    <!--点连线-->
+    <!--背景的点连线-->
     <script type="text/javascript" color="233,233,233" opacity='0.7' zIndex="-2" count="110"
         src="{% static "js/canvas-nest.js" %}"></script>
     <script src="{% static "js/index.js" %}"></script>
