@@ -7,6 +7,7 @@ import json
 from modules import utils
 from modules import faceDetect
 from modules import tts
+from modules import dongmanhua
 
 
 # TODO 用户登录，存储历史记录
@@ -24,6 +25,7 @@ def getToken(request):
     """
     faceToken = request.COOKIES.get('face', None)
     ttsToken = request.COOKIES.get('tts', None)
+    dongmanToken = request.COOKIES.get('dongman', None)
 
     resp = HttpResponse(json.dumps({"error": False}))
 
@@ -39,6 +41,14 @@ def getToken(request):
         try:
             ttsTokenDict = tts.getToken()
             resp.set_cookie('tts', ttsTokenDict['token'], max_age=ttsTokenDict['max_age'])
+
+        except Exception as e:
+            return HttpResponse(json.dumps({'error': True, 'url': '/error/{}/'.format(e)}))
+
+    if not dongmanToken:
+        try:
+            dongmanTokenDict = dongmanhua.getToken()
+            resp.set_cookie('dongman', dongmanTokenDict['token'], max_age=dongmanTokenDict['max_age'])
 
         except Exception as e:
             return HttpResponse(json.dumps({'error': True, 'url': '/error/{}/'.format(e)}))
@@ -89,8 +99,10 @@ def detect_camera(request):
             # 有图片，调用图像识别api
             faceToken = request.COOKIES.get('face', None)
             ttsToken = request.COOKIES.get('tts', None)
-            if not faceToken or not ttsToken:
-                return redirect('/error/没有获取Token')
+            dongmanToken = request.COOKIES.get('dongman', None)
+
+            if not faceToken or not ttsToken or not dongmanToken:
+                return redirect('/error/没有获取Token，需要进入首页获取')
 
             try:
                 # 每个元素是一张脸对应的json数据
@@ -106,16 +118,44 @@ def detect_camera(request):
                 return redirect('/error/faces_to_audio_files出错: {}/'.format(e))
             
             try:
-                # 前端要显示的文本（每个元素是一个字典，对应一张脸）
-                face_display_dicts = utils.faces_to_display_dicts(faces)
+                # 前端要显示的文本（字典存不同类型数据，每个值是一个数组，数组每个元素对应一张脸）
+                face_display_dict = utils.faces_to_display_dict(faces)
             except Exception as e:
-                return redirect('/error/faces_to_display_dicts出错: {}/'.format(e))
+                return redirect('/error/faces_to_display_dict出错: {}/'.format(e))
             
             try:
+                # 前端要显示的评语
+                praise_dicts = utils.faces_to_praise_dicts(faces)
+            except Exception as e:
+                return redirect('/error/faces_to_display_dicts出错: {}/'.format(e))
+
+            try:
+                # 动漫化的图片文件名
+                anim_file = utils.dataURL_to_anim_file(dongmanToken, dataURL)
+            except Exception as e:
+                return redirect('/error/dataURL_to_anim_file出错: {}/'.format(e))
+
+
+            try:
+                # 人脸融合的图片文件名
+                result_imgfile1 = utils.dataURL_to_merge_face_file(faceToken, '赫本.jpg', dataURL)
+                result_imgfile2 = utils.dataURL_to_merge_face_file(faceToken, '哪吒.jpg', dataURL)
+                result_imgfile3 = utils.dataURL_to_merge_face_file(faceToken, '敖丙.jpg', dataURL)
+                
+                result_imgfiles = [result_imgfile1, result_imgfile2, result_imgfile3]
+            except Exception as e:
+                return redirect('/error/dataURL_to_merge_face出错：{}/'.format(e))
+
+
+            try:
                 # 把结果存入session，然后跳转到/result/
-                request.session['face_list'] = faces
+                # request.session['face_list'] = faces
                 request.session['audio_files'] = audio_files
-                request.session['face_display_dicts'] = face_display_dicts
+                request.session['face_display_dict'] = face_display_dict
+                request.session['praise_dicts'] = praise_dicts
+                request.session['anim_file'] = anim_file
+                request.session['result_imgfiles'] = result_imgfiles
+
                 # 是否显示过这个结果，如果显示过应该认为session里的值是过期的
                 request.session['result_expired'] = False
                 return redirect('/result/')
@@ -130,45 +170,46 @@ def detect_camera(request):
         # GET 方法，不处理数据，返回前端摄像头拍照页面
         return redirect('/camera/')
 
-def detect_picfile(request):
-    """根据post来的上传的照片二进制流，后台检测人脸，把人脸json数组和音频url路径数组存入session，后跳转到/result/
-    """
-    if request.POST:
-        # 获取来自input标签的文件内容
-        picfile = request.FILES.get('picfile', None)
-        # print(picfile)
-        if picfile:
-            # 有图片，调用图像识别api
-            faceToken = request.COOKIES.get('face', None)
-            ttsToken = request.COOKIES.get('tts', None)
-            try:
-                # 每个元素是一张脸对应的json数据
-                faces = utils.picfile_to_faces(faceToken, picfile)
+# 上传的照片也改为dataurl上传了
+# def detect_picfile(request):
+#     """根据post来的上传的照片二进制流，后台检测人脸，把人脸json数组和音频url路径数组存入session，后跳转到/result/
+#     """
+#     if request.POST:
+#         # 获取来自input标签的文件内容
+#         picfile = request.FILES.get('picfile', None)
+#         # print(picfile)
+#         if picfile:
+#             # 有图片，调用图像识别api
+#             faceToken = request.COOKIES.get('face', None)
+#             ttsToken = request.COOKIES.get('tts', None)
+#             try:
+#                 # 每个元素是一张脸对应的json数据
+#                 faces = utils.picfile_to_faces(faceToken, picfile)
 
-                # 前端要播放的音频字典（字典每个值是音频文件名）
-                audio_file_dict = utils.faces_to_audio_file_dict(ttsToken, faces)
-                print("人脸数据" + faces)
+#                 # 前端要播放的音频字典（字典每个值是音频文件名）
+#                 audio_file_dict = utils.faces_to_audio_file_dict(ttsToken, faces)
+#                 print("人脸数据" + faces)
 
-                # 前端要显示的文本（每个元素是一个字典，对应一张脸）
-                face_display_dicts = utils.faces_to_display_dicts(faces)
+#                 # 前端要显示的文本（字典存不同类型数据，每个值是一个数组，数组每个元素对应一张脸）
+#                 face_display_dict = utils.faces_to_display_dict(faces)
                 
                 
-                # 把结果存入session，然后跳转到/result/
-                # request.session['face_list'] = faces
-                request.session['face_display_dicts'] = face_display_dicts
-                request.session['audio_files'] = audio_file_dict
-                # 是否显示过这个结果，如果显示过应该认为session里的值是过期的
-                request.session['result_expired'] = False
-                return redirect('/result/')
+#                 # 把结果存入session，然后跳转到/result/
+#                 # request.session['face_list'] = faces
+#                 request.session['face_display_dict'] = face_display_dict
+#                 request.session['audio_files'] = audio_file_dict
+#                 # 是否显示过这个结果，如果显示过应该认为session里的值是过期的
+#                 request.session['result_expired'] = False
+#                 return redirect('/result/')
 
-            except Exception as e:
-                return redirect('/error/出错: {}/'.format(e))
-        else:
-            # 没有传来picDataURL数据，跳转回前端摄像头拍照页面
-            return redirect('/camera/')
-    else:
-        # GET 方法，不处理数据，返回前端摄像头拍照页面
-        return redirect('/camera/')
+#             except Exception as e:
+#                 return redirect('/error/出错: {}/'.format(e))
+#         else:
+#             # 没有传来picDataURL数据，跳转回前端摄像头拍照页面
+#             return redirect('/camera/')
+#     else:
+#         # GET 方法，不处理数据，返回前端摄像头拍照页面
+#         return redirect('/camera/')
 
 def result(request):
     """ 根据session显示相应的结果页面
@@ -176,18 +217,26 @@ def result(request):
     如果session['result_expired']为空或True则跳转回 /camera/
     """
 
+    # 不考虑结果是否显示，刷新之后还停留在结果页面
+    result_dont_expire = True
+    
     # 判断session是否有数据
-    if not request.session.get('result_expired', None):
-        # TODO 数据可视化
-        # TODO 前端读取session数据，不从后端render
-        print(request.session.get('face_display_dicts', None))
-        print(request.session.get('audio_files', None))
+    if result_dont_expire or not request.session.get('result_expired', None):
+        
+        # print(request.session.get('face_display_dict', None))
+        # print(request.session.get('audio_files', None))
+        print(request.session.get('praise_dicts', None))
+        
+        
         context = {}
-        context['face_display_dicts'] = request.session.get('face_display_dicts',None)
+        context['face_display_dict'] = request.session.get('face_display_dict',None)
         context['audio_files'] = request.session.get('audio_files', None)
+        context['praise_dicts'] = request.session.get('praise_dicts', None)
+        context['anim_file'] = request.session.get('anim_file', None)
+        context['result_imgfiles'] = request.session.get('result_imgfiles', None)
 
         request.session['result_expired'] = True
-        # TODO 音频数据用完之后是否需要删掉？
+        
         return render(request, 'result.html', context)
     else:
         return redirect('/camera/')

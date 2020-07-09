@@ -156,7 +156,7 @@
             <div style="position: absolute; top:0; right: 0; z-index: 2;">
                 <!-- 右侧上传图片按钮 -->
                 <div style="height:100vh;">
-                <button id="loading" style="visibility: hidden" onclick="{document.getElementById('camSubmit').click(); this.style.cursor='wait'}"></button>
+                <button id="loading" style="visibility: hidden" onclick="{this.disabled=true; document.getElementById('camSubmit').click(); $(this).css('cursor', 'wait'); $('body').css('cursor', 'wait');}"></button>
                 </div>
             </div>
 
@@ -172,11 +172,8 @@
                 <input type="submit" value="上传摄像头照片" id="camSubmit">
             </form>
 
-            <form action="/detect/picfile/" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <!-- 转换成dataURL上传 -->
-                <input type="file" name="picfile" id="picfile" accept=".jpg,.jpeg,.png,.bmp">
-            </form>
+            <!-- 转换成dataURL上传 -->
+            <input type="file" name="picfile" id="picfile" accept=".jpg,.jpeg,.png,.bmp">
 
             <button id="downPic" onclick="downPic()">下载图片Base64URL</button>
             

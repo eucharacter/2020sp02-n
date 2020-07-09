@@ -217,12 +217,17 @@ function takePhoto () {
     videoWrapper.style.display = 'none';
     recording = false;
 
+    // 隐藏拍照按钮
+    take_svg.style.display = 'none';
+
     // 隐藏demo
     demo.style.display = "none";
     
     // 显示photoPreview
     photoPreview.style.display = 'block';
 
+    // 显示back
+    cancel_svg.style.display = 'block';
 
     // 显示loading
     loading.style.visibility = "visible";
@@ -332,6 +337,9 @@ function goBack () {
 
             // 显示video
             videoWrapper.style.display = 'block';
+
+            // 显示拍照按钮
+            take_svg.style.display = 'block';
 
             // 隐藏photoPreview
             photoPreview.style.display = 'none';

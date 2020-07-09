@@ -1,4 +1,4 @@
-"""2020sp02 URL Configuration
+"""summerInternProjectBackend URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.2/topics/http/urls/
@@ -22,7 +22,6 @@ urlpatterns = [
     path('', views.index),
     path('camera/', views.camera_site),
     path('detect/camera/', views.detect_camera),
-    path('detect/picfile/', views.detect_picfile),
     path('error/<str:msg>/', views.error),
     path('getToken/', views.getToken),
     path('result/', views.result)

@@ -1,6 +1,38 @@
 
+var play1, play2, play3, play4;
+
 'use strict';
 $(document).ready(function () {
+
+	var result_img1 = document.getElementById('result_img1');
+	var result_img2 = document.getElementById('result_img2');
+	var result_img3 = document.getElementById('result_img3');
+	var result_img4 = document.getElementById('result_img4');
+	var cube1 = document.getElementById('cube1');
+	var cube2 = document.getElementById('cube2');
+	var cube3 = document.getElementById('cube3');
+	var cube4 = document.getElementById('cube4');
+
+
+	// $(cube1).click(function () {
+	// 	$(result_img1).slideToggle();
+	// })
+	// $(cube2).click(function () {
+	// 	$(result_img2).slideToggle();
+	// })
+	// $(cube3).click(function () {
+	// 	$(result_img3).slideToggle();
+	// })
+	// $(cube4).click(function () {
+	// 	$(result_img4).slideToggle();
+	// })
+
+	// function slideDown (result_img) {
+	// 	if (result_img.style.display == 'none' || result_img.style.display == '' ) {
+	// 		$(result_img).slideDown();
+	// 	}
+	// }
+
 
     var currentPage = 1;
 
@@ -9,7 +41,7 @@ $(document).ready(function () {
     var audio3 = document.getElementById('music3');
     var audio4 = document.getElementById('music4');
 
-    function play1() {
+    play1 = function p1() {
         if (audio1.paused) {
             console.log("play audio1");
             audio1.play();
@@ -22,7 +54,7 @@ $(document).ready(function () {
             // document.getElementById('musBtn1');
         }
     }
-    function play2() {
+    play2 = function p2() {
         if (audio2.paused) {
             console.log("play audio2");
 
@@ -36,7 +68,7 @@ $(document).ready(function () {
             // document.getElementById('musBtn2');
         }
     }
-    function play3() {
+    play3 = function p3() {
         if (audio3.paused) {
             console.log("play audio3");
             audio3.play();
@@ -48,7 +80,7 @@ $(document).ready(function () {
             // document.getElementById('musBtn3');
         }
     }
-    function play4() {
+    play4 = function p4() {
         if (audio4.paused) {
             console.log("play audio4");
             audio4.play();
@@ -64,25 +96,31 @@ $(document).ready(function () {
     window.onload = function(){
         console.log("onload");
         play1();
-    }
+		// slideDown(result_img1);
+	}
 
     function onNavigate(){
         console.log(currentPage);
         currentPage = parseInt(currentPage);
         switch (currentPage){
             case 1:
-                play1();
+				play1();
+				// slideDown(result_img1);
                 break;
             case 2:
                 play2();
-                break;
+				// slideDown(result_img2);
+				break;
             case 3:
                 play3();
-                break;
+				// slideDown(result_img3);
+				break;
             case 4:
                 play4();
-                break;
-        }
+				// slideDown(result_img4);
+				break;
+		}
+		
     }
 
 

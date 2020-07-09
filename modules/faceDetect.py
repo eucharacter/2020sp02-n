@@ -1,6 +1,6 @@
 import base64
 import requests
-
+import json
 
 def getToken():
     """输出token，以及到期时间用于cookie
@@ -40,6 +40,13 @@ def getToken():
     else:
         raise Exception('MAYBE API_KEY or SECRET_KEY not correct: access_token or scope not found in token response')
 
+
+def imgfile_to_image64(fileName):
+    """给文件完整路径，输出image64
+    """
+    with open(fileName, 'rb') as f:
+        image64 = str(base64.b64encode(f.read()), 'utf-8')
+    return image64
 
 def picfile_to_image64(picfile):
     """二进制流图片转image64
@@ -117,6 +124,59 @@ def detect(token, image64):
     if respjson['error_code'] == 0:
         # 识别成功
         return respjson['result']
+
+    # TODO 温和地处理没找到脸的错误 err_code=222202
+    # 错误码 https://ai.baidu.com/ai-doc/FACE/5k37c1ujz
+    raise Exception(
+        "face detection error! err_code: {}, err_msg: {}".format(respjson['error_code'], respjson['error_msg']))
+
+# 人脸融合
+def merge(token, image_template64, image_target64):
+    """输入image_模板64和image_目标64，输出人脸融合结果，且base64解码的图片信息
+
+        返回内容:{   
+            "merge_image": "iVBORw0KGgoAAAANSUhEUgAAAeoAAAHqCAYAAADLb..."
+        }
+        
+    """
+    print("in face merge")
+    print("template: ")
+    print(image_template64[:10])
+    print("target:")
+    print(image_target64[:10])
+
+    
+    image_type = "BASE64"
+    request_url = "https://aip.baidubce.com/rest/2.0/face/v1/merge"
+
+    params = {
+        "image_template": {"image": image_template64, "image_type": image_type, },
+        "image_target": {"image": image_target64, "image_type": image_type, },
+    }
+    
+    params = json.dumps(params)
+
+    request_url = request_url + "?access_token=" + token
+
+    headers = {'content-type': 'application/json'}
+
+    respjson = requests.post(request_url, data=params, headers=headers).json()
+
+    """
+        respjson内容：
+        {
+        "error_code": 0,
+        "error_msg": "SUCCESS",
+        "log_id": 1234567890123,
+        "timestamp": 1533094576,
+        "cached": 0,
+        "result":{"merge_image": "iVBORw0KGgoAAAANSUhEUgAAAeoAAAHqCAYAAADLb..."}
+        }
+    """
+
+    if respjson['error_code'] == 0:
+        # 识别成功
+        return base64.b64decode(respjson['result']['merge_image'])
 
     # TODO 温和地处理没找到脸的错误 err_code=222202
     # 错误码 https://ai.baidu.com/ai-doc/FACE/5k37c1ujz
