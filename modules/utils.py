@@ -347,7 +347,7 @@ def dataURL_to_merge_face_file(token, image_template_name, dataURL):
     """
     image_target64 = faceDetect.dataURL_to_image64(dataURL)
     
-    folderName = os.path.join(os.getcwd(), 'static/images/')
+    folderName = os.path.join(os.getcwd(), '2020sp02-n/static/images/')
     fileFullName = os.path.join(folderName, image_template_name)
     image_template64 = faceDetect.imgfile_to_image64(fileFullName)
 
