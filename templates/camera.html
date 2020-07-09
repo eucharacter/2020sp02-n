@@ -69,7 +69,7 @@
             <div id="main" style="height:50rem; position:absolute; top:0; left:50%; margin: auto; margin-left: -35vw; z-index: 1;">
                 <div id="upper"></div>
 
-                <div id="uppermid" style="display: flex; height: 80%; width: 70vw; border-style: dashed; flex-direction: column; justify-content: space-between;">
+                <div id="uppermid" style="display: flex; height: 80%; width: 70vw; flex-direction: column; justify-content: space-between;">
 
                     <!-- 占位图/摄像头预览/摄像头拍的照/上传的照 -->
                     <div style="height: 100%;">
@@ -80,7 +80,9 @@
                             <img id="demo" style="display: block; height: 25rem; z-index: 1;" src="{% static "images/demo.jpg" %}" alt="">
 
                             <!-- 预览照片结果 -->
-                            <img id="photoPreview" style="display: none; height: 25rem; z-index: 1;" src="" >
+                            <img id="photoPreview" style="display: none; z-index: 1;" src="" >
+                            <!-- 预览照片结果 -->
+                            <img id="filePreview" style="display: none; z-index: 1;" src="" >
 
                             <div id="videoWrapper" style="display: none; text-align: center; width: fit-content; height: fit-content; ">
                                 <video id="video" style="display: inline-block; height: 25rem;"> 你的浏览器不支持video标签</video>
@@ -124,17 +126,15 @@
                                 </svg>
                             </div>
 
-                            {% comment %}
-                            <!-- 上传按钮
-                            <div id="up_svg" title="上传照片" style="width: fit-content; cursor:pointer;">
+                            <!-- 上传按钮 -->
+                            <div id="up_svg" onclick="document.getElementById('picfile').click()" title="上传照片">
                                 <svg style="height:100%;" viewBox="0 0 16 16" class="bi bi-upload" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd"
                                     d="M.5 8a.5.5 0 0 1 .5.5V12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8.5a.5.5 0 0 1 1 0V12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8.5A.5.5 0 0 1 .5 8zM5 4.854a.5.5 0 0 0 .707 0L8 2.56l2.293 2.293A.5.5 0 1 0 11 4.146L8.354 1.5a.5.5 0 0 0-.708 0L5 4.146a.5.5 0 0 0 0 .708z" />
                                     <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0v-8A.5.5 0 0 1 8 2z" />
                                 </svg>
-                            </div> -->
-                            {% endcomment %}
+                            </div>
 
                         </div>
 
@@ -156,7 +156,7 @@
             <div style="position: absolute; top:0; right: 0; z-index: 2;">
                 <!-- 右侧上传图片按钮 -->
                 <div style="height:100vh;">
-                <button id="loading" style="visibility: hidden" onclick="{document.getElementById('photoSubmit').click(); this.style.cursor='wait'}"></button>
+                <button id="loading" style="visibility: hidden" onclick="{document.getElementById('camSubmit').click(); this.style.cursor='wait'}"></button>
                 </div>
             </div>
 
@@ -169,7 +169,13 @@
                 <!-- value=图片的dataURL -->
                 <input type="hidden" name="picDataURL" id="picDataURL" value="">
                 <!-- 上传按钮，onclick比onsubmit早触发 -->
-                <input type="submit" value="纯上传" id="photoSubmit">
+                <input type="submit" value="上传摄像头照片" id="camSubmit">
+            </form>
+
+            <form action="/detect/picfile/" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- 转换成dataURL上传 -->
+                <input type="file" name="picfile" id="picfile" accept=".jpg,.jpeg,.png,.bmp">
             </form>
 
             <button id="downPic" onclick="downPic()">下载图片Base64URL</button>
@@ -187,6 +193,10 @@
     <script src="{% static "js/canvas-nest.js" %}" type="text/javascript" color="233,233,233" opacity='0.7' zIndex="-2" count="327" ></script>
     <script src="{% static "js/mediaUtil.js" %}" type="text/javascript"></script>
     <script src="{% static "js/getDevices.js" %}" type="text/javascript"></script>
+    <script>
+        // 选择文件发生变化
+        document.getElementById('picfile').onchange = uploadFile;
+    </script>
 <!--点连线-->
 </body>
 </html>

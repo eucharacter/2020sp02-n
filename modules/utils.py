@@ -92,8 +92,8 @@ def faces_to_display_dicts(faces):
     #返回的字典数组
     return display_dicts
 
-def _face_to_audio_txt_dict(face):
-    """给一个face的json信息，输出音频的文本字典
+def _faces_to_audio_txt_dict(faces):
+    """给一个face的json信息，输出音频的文本字典，字典每个值是一个数组，把多张脸的某类信息拼在一起。
 
     Args:
         face: json字典，形如：
@@ -111,41 +111,63 @@ def _face_to_audio_txt_dict(face):
             
     输出字典形如：
         {
-        'age':'年龄XX岁'
-        'beauty':'颜值XX分'
-        'expression':'表情无（微笑，大小）'
-        'gender':'性别男（女）'
-        'glasses':'没有戴眼镜（戴了普通眼镜，戴了墨镜）'
+        'age':'年龄XX岁，年龄XX岁'...
+        'beauty':'颜值XX分，颜值XX分'...
+        'expression':'表情无（微笑，大小），表情无（微笑，大小）'...
+        'glasses':'没有戴眼镜（戴了普通眼镜，戴了墨镜），没有戴眼镜（戴了普通眼镜，戴了墨镜）'...
         }
     """
 
-    if face['expression']['type'] == 'none':
-        expression = '无'
-    elif face['expression']['type'] == 'smile':
-        expression = '微笑'
-    else:
-        expression = '大笑'
+    age = []
+    beauty = []
+    expression = []
+    # gender = []
+    # 'gender':'性别男（女）'
+    glasses = []
+    
+    for face in faces:
+        age.append(f"年龄{str(face['age'])}岁")
+        
+        beauty.append(f"颜值{str(face['beauty'])}分")
+        
+        if face['expression']['type'] == 'none':
+            expression.append('表情无')
+        elif face['expression']['type'] == 'smile':
+            expression.append('表情微笑')
+        else:
+            expression.append('表情大笑')
 
-    if face['gender']['type'] == 'male':
-        gender = '男'
-    else:
-        gender = '女'
+        # if face['gender']['type'] == 'male':
+        #     gender.append('性别男')
+        # else:
+        #     gender.append('性别女')
 
-    if face['glasses']['type'] == 'none':
-        glasses = '没有戴眼镜'
-    elif face['glasses']['type'] == 'common':
-        glasses = '戴了普通眼镜'
-    else:
-        glasses = '戴了墨镜'
-    audio_dict = {'age': '年龄{}岁，'.format(str(face['age'])), 'beauty': '颜值{}分，'.format(str(face['beauty'])),
-                 'expression': '表情{}，'.format(expression), 'gender': '性别{}，'.format(gender), 'glasses': glasses}
+        if face['glasses']['type'] == 'none':
+            glasses.append('没有戴眼镜')
+        elif face['glasses']['type'] == 'common':
+            glasses.append('戴了普通眼镜')
+        else:
+            glasses.append('戴了墨镜')
+            
+    audio_dict ={
+        'age': '，'.join(age),
+        'beauty': '，'.join(beauty),
+        'expression': '，'.join(expression),
+        # 'gender': '{}，'.join(gender),
+        'glasses': '，'.join(glasses)
+    }
     return audio_dict
 
 def _save_file(bytes: bytes, suffix):
     """给定文件二进制流和后缀名（不带点），保存文件在static/files，返回文件名('xxx.mp3')
     """
+    folderName = os.path.join(os.getcwd(), 'static/files/')
+    
     fileName = '{}.{}'.format(uuid.uuid4(), suffix)
-    fileFullName = os.path.join(os.getcwd(), 'static/files/', fileName)
+    fileFullName = os.path.join(folderName, fileName)
+
+    if not os.path.exists(folderName):
+        os.mkdir(folderName)
 
     try:
         with open(fileFullName, 'wb') as f:
@@ -154,37 +176,32 @@ def _save_file(bytes: bytes, suffix):
     except Exception as e:
         raise e
 
-def faces_to_audio_files(token, faces):
-    """多个 人脸json数据 转换成 多个字典。每个字典存 细分后的音频 的文件名。
+def faces_to_audio_file_dict(token, faces):
+    """多个 人脸json数据 转换成 一个字典。每个值存 细分后的音频 的文件名。
 
-    先把人脸json数据转换成需要的音频文本字典，
+    先把多张人脸json数据转换成需要的音频文本字典，
     再把字典中的文本信息转换成音频二进制流，
     再把音频存到本地，
-    再用一个字典存储一张脸的所有音频文件的名字
+    再用一个字典存储多张脸的所有音频文件的名字
     最后返回存储 音频名字 字典构成的数组。
     
-    输出数组中每个元素形如：
+    输出字典形如：
         {
-        'age':'年龄XX岁' 的mp3文件名
-        'beauty':'颜值XX分' 的mp3文件名
-        'expression':'表情无（微笑，大小）' 的mp3文件名
-        'gender':'性别男（女）' 的mp3文件名
-        'glasses':'没有戴眼镜（戴了普通眼镜，戴了墨镜）' 的mp3文件名
+        'age':'年龄XX岁，年龄XX岁'...  的mp3文件名
+        'beauty':'颜值XX分，颜值XX分'...  的mp3文件名
+        'expression':'表情无（微笑，大小），表情无（微笑，大小）'...  的mp3文件名
+        'glasses':'没有戴眼镜（戴了普通眼镜，戴了墨镜），没有戴眼镜（戴了普通眼镜，戴了墨镜）'...  的mp3文件名
         }
     """
 
-    audio_files = list()
-    for face in faces:
-        # print(face)
-        audio_txt_dict = _face_to_audio_txt_dict(face)
-        # print(audio_txt_dict)
-        audio_file_dict = {}
-        
-        for key, txt in audio_txt_dict.items():
-            audio_bin_flow = tts.convert(token, txt, AUE=3)
-            fileName = _save_file(audio_bin_flow, 'mp3')
-            audio_file_dict[key] = fileName
+    audio_txt_dict = _faces_to_audio_txt_dict(faces)
+    audio_file_dict = {}
+    
+    for key, txt in audio_txt_dict.items():
+        audio_bin_flow = tts.convert(token, txt, AUE=3)
+        fileName = _save_file(audio_bin_flow, 'mp3')
+        audio_file_dict[key] = fileName
             
-        audio_files.append(audio_file_dict)
-    return audio_files
+    return audio_file_dict
+
 

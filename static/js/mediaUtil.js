@@ -24,7 +24,9 @@ var videoWrapper = document.getElementById("videoWrapper");
 const photoCanvas = document.getElementById('photoCanvas');
 const photoContext = photoCanvas.getContext('2d');
 const photoPreview = document.getElementById("photoPreview");
+const filePreview = document.getElementById("filePreview");
 const demo = document.getElementById("demo");
+const picfile = document.getElementById("picfile");
 
 // var imageCapture = null;
 // 是否打开了摄像头
@@ -74,13 +76,14 @@ function updateConstraints (deviceId) {
 
 const init_svgs = document.getElementById("init_svgs");
 const take_svg = document.getElementById("take_svg");
+const up_svg = document.getElementById("up_svg");
 const cancel_svg = document.getElementById("cancel_svg");
 const lower = document.getElementById("lower");
 const loading = document.getElementById("loading");
 var devices = null;
 /**
  * 打开摄像头，
- * 隐藏相机和上传按钮，隐藏外框，隐藏demo, photoPreview，隐藏loading
+ * 隐藏相机和上传按钮，隐藏demo, photoPreview，隐藏loading
  * 第一次打开时显示下拉菜单（如果有多个设备）
  */
 function turnOnDevice () {
@@ -114,9 +117,6 @@ function turnOnDevice () {
                 
                 recording = true;
 
-                // 隐藏外框
-                document.getElementById("uppermid").style.borderStyle = "none";
-
                 // 隐藏loading
                 loading.style.visibility = "hidden";
                 
@@ -125,7 +125,6 @@ function turnOnDevice () {
 
                 // 隐藏demo
                 demo.style.display = "none";
-
 
                 
                 // 显示拍照按钮
@@ -267,28 +266,106 @@ function takePhoto () {
 
 
 }
+var reader = new FileReader();
+reader.onload = () => {
+    console.log("上传的图片加载完成");
+    // 设置filePreview的src
+    filePreview.src = reader.result;
 
-function goBack() {
-    if (recording) {
-        closeDevice();
+    // 设置dataURL
+    document.getElementById("picDataURL").value = reader.result;
+
+    // 隐藏demo
+    demo.style.display = 'none';
+
+    // onload中显示filePreview
+
+    // 显示back
+    cancel_svg.style.display = "block";
+
+    // 显示loading
+    loading.style.visibility = "visible";
+    
+}
+
+filePreview.onloadedmetadata = () => {
+
+    console.log("meatadata");
+    
+}
+filePreview.onload = () => {
+    console.log("onload");
+    
+    console.log(filePreview.naturalHeight);
+    console.log(demo.height);
+
+    if (filePreview.naturalHeight > demo.height) {
+        filePreview.height = demo.height;
+        // onload中显示filePreview
+    }
+    filePreview.style.display = "block";
+}
+
+filePreview.complete = () => {
+    console.log("complete");
+    
+}
+
+function uploadFile () {
+    
+    if (picfile.files.length > 0) {
+        // console.log(picfile.files[0]);
+        reader.readAsDataURL(picfile.files[0]);
+        
+        init_svgs.style.display = "none";
+
+    }
+}
+
+function goBack () {
+    if (cameraOn) {
+        
+        if (recording) {
+            closeDevice();
+        } else {
+            recording = true;
+
+            // 显示video
+            videoWrapper.style.display = 'block';
+
+            // 隐藏photoPreview
+            photoPreview.style.display = 'none';
+
+            // 隐藏loading
+            loading.style.visibility = "hidden";
+        }
     } else {
-        recording = true;
+        // 删除filePreview
+        filePreview.src = "";
+        
+        // 隐藏filePreview
+        filePreview.style.display = "none";
 
-        // 显示video
-        videoWrapper.style.display = 'block';
 
-        // 隐藏photoPreview
-        photoPreview.style.display = 'none';
+        // 隐藏back
+        cancel_svg.style.display = "none";
 
         // 隐藏loading
         loading.style.visibility = "hidden";
+
+        // 显示demo
+        demo.style.display = 'block';
+
+        // 显示两按键
+        init_svgs.style.display = "block";
+
     }
 }
 
 /**
  * 关闭摄像头
  * 隐藏video、拍照，返回按钮，下拉菜单，loading
- * 显示外框、demo
+ * 显示demo
  * 显示拍照、上传按钮
  */
 function closeDevice () {
@@ -301,9 +378,6 @@ function closeDevice () {
     // imageCapture = null;
 
     videoWrapper.style.display = "none";
-
-    // 显示外框
-    document.getElementById("uppermid").style.borderStyle = "dashed";
 
     // 显示demo
     demo.style.display = "block";

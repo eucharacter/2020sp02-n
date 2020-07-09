@@ -29,6 +29,16 @@
 	transform: translate(1px, 1px);
 }
 
+#up_svg{
+	height: 100%;
+	width: fit-content; 
+	cursor:pointer;
+}
+
+#up_svg:hover{
+	transform: translate(1px, 1px);
+}
+
 #cancel_svg{
 	width: 3rem; 
 	display: none; 
