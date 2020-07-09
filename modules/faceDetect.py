@@ -202,7 +202,7 @@ def write_pic(image64, fileFullName):
 
 def cropper(image64, face_list):
     filename = "photo.png"
-    folderName = os.path.join(os.getcwd(), 'static/files/')
+    folderName = os.path.join(os.getcwd(), '2020sp02-n/static/files/')
     fileFullName = os.path.join(folderName, filename)
 
     imgSrc = write_pic(image64, fileFullName)

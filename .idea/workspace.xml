@@ -10,16 +10,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="11c5aed8-14e2-47ff-9570-147d29504684" name="默认更改列表" comment="默认更改列表">
-      <change afterPath="$PROJECT_DIR$/summerInternProjectBackend/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/summerInternProjectBackend/settings.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/summerInternProjectBackend/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/summerInternProjectBackend/wsgi.py" afterDir="false" />
+    <list default="true" id="11c5aed8-14e2-47ff-9570-147d29504684" name="默认更改列表" comment="finaltest">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2020sp02/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/2020sp02/settings.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/2020sp02/urls.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/2020sp02/wsgi.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -215,7 +207,7 @@
       <updated>1593910978866</updated>
       <workItem from="1594227608221" duration="646000" />
       <workItem from="1594228275096" duration="931000" />
-      <workItem from="1594229254417" duration="11854000" />
+      <workItem from="1594229254417" duration="12749000" />
     </task>
     <task id="LOCAL-00001" summary="默认更改列表">
       <created>1594265294085</created>
@@ -294,7 +286,21 @@
       <option name="project" value="LOCAL" />
       <updated>1594301105750</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="finaltest">
+      <created>1594311649723</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1594311649723</updated>
+    </task>
+    <task id="LOCAL-00013" summary="finaltest">
+      <created>1594311756042</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1594311756042</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -315,7 +321,8 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="默认更改列表" />
-    <option name="LAST_COMMIT_MESSAGE" value="默认更改列表" />
+    <MESSAGE value="finaltest" />
+    <option name="LAST_COMMIT_MESSAGE" value="finaltest" />
   </component>
   <component name="WindowStateProjectService">
     <state x="842" y="-698" key="#Notifications" timestamp="1594229872696">
@@ -342,10 +349,10 @@
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
     <state x="461" y="-916" key="SettingsEditor/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1594265697622" />
-    <state x="368" y="147" key="Vcs.Push.Dialog.v2" timestamp="1594301122375">
-      <screen x="0" y="0" width="1280" height="680" />
+    <state x="552" y="-827" key="Vcs.Push.Dialog.v2" timestamp="1594311763027">
+      <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="552" y="-827" key="Vcs.Push.Dialog.v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1594294729353" />
+    <state x="552" y="-827" key="Vcs.Push.Dialog.v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1594311763027" />
     <state x="368" y="147" key="Vcs.Push.Dialog.v2/0.0.1280.680@0.0.1280.680" timestamp="1594301122375" />
     <state x="753" y="-647" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1594265398848">
       <screen x="0" y="-1080" width="1920" height="1040" />
