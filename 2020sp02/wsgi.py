@@ -1,5 +1,5 @@
 """
-WSGI config for summerInternProjectBackend project.
+WSGI config for 2020sp02 project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'summerInternProjectBackend.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', '2020sp02.settings')
 
 application = get_wsgi_application()
