@@ -1,7 +1,8 @@
 import base64
 import requests
 import json
-
+from PIL import Image
+import os
 def getToken():
     """输出token，以及到期时间用于cookie
 
@@ -183,6 +184,48 @@ def merge(token, image_template64, image_target64):
     raise Exception(
         "face detection error! err_code: {}, err_msg: {}".format(respjson['error_code'], respjson['error_msg']))
 
+# 将图片Base64编码写为本地图片
+
+
+def write_pic(image64, fileFullName):
+    imgData = base64.b64decode(image64)
+    
+    
+    with open(fileFullName, 'wb') as file:
+        file.write(imgData)
+        print("写photo.png")
+        
+    return fileFullName
+
+# 切割图片人脸
+
+
+def cropper(image64, face_list):
+    filename = "photo.png"
+    folderName = os.path.join(os.getcwd(), 'static/files/')
+    fileFullName = os.path.join(folderName, filename)
+
+    imgSrc = write_pic(image64, fileFullName)
+    
+    print(imgSrc)
+    img = Image.open(imgSrc, 'r')
+
+    # 取出每个人脸的位置信息
+    locations = []
+    for face in face_list:
+        locations.append(face['location'])
+        # print(face['location'])
+
+    # 开始截取人脸
+    cropped_faces = []
+    for i, location in enumerate(locations):
+        print(i)
+        region = img.crop((location['left'], location['top'], location['left']+location['width'], location['top']+location['height']))
+        # 保存图片
+        region.save(os.path.join(folderName, 'cropped_face{0}.png'.format(i)))
+        cropped_faces.append('cropped_face{0}.png'.format(i))
+
+    return cropped_faces
 
 if __name__ == '__main__':
     detect(getToken(),

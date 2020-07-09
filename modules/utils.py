@@ -9,6 +9,8 @@ from modules import dongmanhua
 
 
 def dataURL_to_anim_file(token, dataURL):
+    """根据照片dataURL数据得到动漫化的图片文件名
+    """
     image64 = faceDetect.dataURL_to_image64(dataURL)
     file = dongmanhua.selfie_anime(token, image64)
     fileName = _save_file(file, "animfile.jpg")
@@ -45,7 +47,7 @@ def dataURL_to_faces(token, dataURL):
 #     return face_list
 
 def faces_to_display_dict(faces):
-    """给一个数组，每个元素是一张脸的json信息，输出的是字典，字典每个值是一个数组，把多张脸的某类文本信息拼在一起。
+    """给一个数组，每个元素是一张脸的json信息，输出的是字典，字典每个值是一个数组，数组中存放的是多张脸的同一属性信息。
 
         Args:
             face: json字典，形如：
@@ -61,12 +63,12 @@ def faces_to_display_dict(faces):
                 'glasses': {'type': 'none', 'probability': 1}
                 }
                 
-        输出字典形如：
+        输出字典形如：（字典的一个元素是一个同属性数组）
             {
-            'age_gender':[(int, 男（女）), ...]
-            'beauty':[float, ...]
-            'expression':['无（微笑，大小）', ...]
-            'glasses':['没有戴眼镜（戴了普通眼镜，戴了墨镜）', ...]
+            'age_gender':[(int, 男（女）),int,男（女） ...]
+            'beauty':[float,float ...]
+            'expression':['无（微笑，大小）', '无（微笑，大小）...]
+            'glasses':['没有戴眼镜（戴了普通眼镜，戴了墨镜）','没有戴眼镜（戴了普通眼镜，戴了墨镜）' ...]
             }
         """
     
@@ -79,30 +81,34 @@ def faces_to_display_dict(faces):
     
     
     for face in faces:
-        if face['gender']['type']=='male':
+        #根据face['age']和face['gender']['type']返回需要的年龄和性别
+        if face['gender']['type'] == 'male':
             age_gender.append((face['age'], '男'))
         else:
             age_gender.append((face['age'], '女'))
 
+        #将face['beauty']返回颜值分数
         beauty.append(face['beauty'])
         
-        if face['expression']['type']=='none':
+        #根据face['expression']['type']返回需要的表情
+        if face['expression']['type'] == 'none':
             expression.append('无')
         elif face['expression']['type']=='smile':
             expression.append('微笑')
         else:
             expression.append('大笑')
 
-        if face['glasses']['type']=='none':
+        #根据face['glasses']['type']返回是否戴眼镜
+        if face['glasses']['type'] == 'none':
             glasses.append('没有戴眼镜')
         elif face['glasses']['type']=='common':
             glasses.append('戴了普通眼镜')
         else:
             glasses.append('戴了墨镜')
 
-
+    #将属性数组存入字典
     display_dict = {
-        'age_gender': age_gender,
+        'age': age_gender,
         'beauty': beauty,
         'expression': expression,
         'glasses': glasses
@@ -113,7 +119,7 @@ def faces_to_display_dict(faces):
 
 
 def faces_to_praise_dicts(faces):
-    """给一个face的json信息，输出彩虹屁的文本字典，字典每个值是一个数组，把多张脸的某类信息拼在一起。
+    """给一个face的json信息，输出相关属性评语的文本字典，字典每个值是一个数组，数组中存放的是多张脸的同一属性信息。
 
     Args:
         face: json字典，形如：
@@ -129,21 +135,22 @@ def faces_to_praise_dicts(faces):
             'glasses': {'type': 'none', 'probability': 1}
             }
 
-    输出字典形如：
+    输出字典形如：（字典的一个元素是一个同属性数组）
         {
-        'age':'彩虹屁，彩虹屁'...
-        'beauty':'彩虹屁，彩虹屁'...
-        'expression':彩虹屁，彩虹屁'...
-        'glasses':彩虹屁，彩虹屁'...
+        'age':['评语', '评语'...]
+        'beauty':['评语', '评语'...]
+        'expression':[评语', '评语'...]
+        'glasses':[评语', '评语'...]
         }
     """
-
+    #年龄评语
     ages = ['保持同心，年龄就只是数字。',
             '相信你每一岁的生活都丰富多彩。',
             '结果与实际不符？建议重新摆个pose再来一次。',
             '我转山转水转佛塔，不为修来生，只为在对的时间遇见对的你。',
             '时光会在脸上留下痕迹，但不会在信件留痕，每个人都在思维上永葆青春。']
 
+    #颜值评语，根据分数0-40，40-60，60-80，80-100来划分的返回评语信息
     # 低于40分
     beauty1 = ['检测结果有误，我相信您是最美的。',
                '测试结果仅为百度AI返回数据，不代表本项目审美观点，如对结果不满，请找百度。',
@@ -162,6 +169,7 @@ def faces_to_praise_dicts(faces):
                '哇噻！您莫不是天神下凡。',
                '​恐龙会灭绝绝对是因为前肢太短没法为你的美丽鼓掌。']
 
+    #表情评语，根据没有表情，微笑，大笑来划分返回的评语信息。
     # 没有表情
     expression1 = ['微笑了再测试一次颜值会提高哟！',
                    '是有什么烦心事吗？可以说给我听啊，我一直都在。',
@@ -187,6 +195,7 @@ def faces_to_praise_dicts(faces):
                 '很荣幸见证了你原始的美丽。',
                 '你的眼睛很美,像海一样，请你相信,岛屿密集的海都没有那么蓝。',
                 '说星星好看的人一定没见过你的眼睛。']
+    #是否戴眼镜评语，根据没有戴眼镜，戴了普通眼镜，戴了墨镜来划分返回的评语信息
     # 戴了普通眼镜
     glasses2 = ['眼镜也不能遮挡你美丽明亮的双眼。',
                 '上帝舍不得让你的双眼接触到世间的尘埃，所以送给了你一副眼镜。',
@@ -367,3 +376,11 @@ def dataURL_to_merge_face_file(token, image_template_name, dataURL):
 #     image_merge = faceDetect.merge(token, image_template64, image_target64)
 
 #     return image_merge
+
+
+def get_crop_filenames(dataURL, face_list):
+    """输入图片的dataURL和识别结果json数组，返回裁剪后的图片文件名数组
+    """
+    image64 = faceDetect.dataURL_to_image64(dataURL)
+    return faceDetect.cropper(image64, face_list)
+    

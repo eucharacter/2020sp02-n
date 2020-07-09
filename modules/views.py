@@ -92,6 +92,7 @@ def detect_camera(request):
         # request.session['audio_files'] = audio_files
         # request.session['result_expired'] = False  # 是否显示过这个结果，如果显示过应该认为session里的值是过期的
         # return redirect('/result/')
+        debug_crop_only = False
 
         dataURL = request.POST.get('picDataURL', None)
         # print(dataURL)
@@ -111,11 +112,12 @@ def detect_camera(request):
             except Exception as e:
                 return redirect('/error/dataURL_to_faces出错: {}/'.format(e))
             
-            try:
-                # 前端要播放的音频（每个元素是一个字典，字典每个元素是音频文件名）
-                audio_files = utils.faces_to_audio_file_dict(ttsToken, faces)
-            except Exception as e:
-                return redirect('/error/faces_to_audio_files出错: {}/'.format(e))
+            if not debug_crop_only:
+                try:
+                    # 前端要播放的音频（每个元素是一个字典，字典每个元素是音频文件名）
+                    audio_files = utils.faces_to_audio_file_dict(ttsToken, faces)
+                except Exception as e:
+                    return redirect('/error/faces_to_audio_files出错: {}/'.format(e))
             
             try:
                 # 前端要显示的文本（字典存不同类型数据，每个值是一个数组，数组每个元素对应一张脸）
@@ -129,23 +131,29 @@ def detect_camera(request):
             except Exception as e:
                 return redirect('/error/faces_to_display_dicts出错: {}/'.format(e))
 
-            try:
-                # 动漫化的图片文件名
-                anim_file = utils.dataURL_to_anim_file(dongmanToken, dataURL)
-            except Exception as e:
-                return redirect('/error/dataURL_to_anim_file出错: {}/'.format(e))
+            anim_file = []
+            result_imgfiles = []
+            
+            if not debug_crop_only:
+                try:
+                    # 动漫化的图片文件名
+                    anim_file = utils.dataURL_to_anim_file(dongmanToken, dataURL)
+                except Exception as e:
+                    return redirect('/error/dataURL_to_anim_file出错: {}/'.format(e))
 
+    
+                try:
+                    # 人脸融合的图片文件名
+                    result_imgfile1 = utils.dataURL_to_merge_face_file(faceToken, '胡歌.jpg', dataURL)
+                    result_imgfile2 = utils.dataURL_to_merge_face_file(faceToken, '赫本.jpg', dataURL)
+                    result_imgfile3 = utils.dataURL_to_merge_face_file(faceToken, '彭于晏.jpg', dataURL)
+                    
+                    result_imgfiles = [result_imgfile1, result_imgfile2, result_imgfile3]
+                except Exception as e:
+                    return redirect('/error/dataURL_to_merge_face出错：{}/'.format(e))
 
-            try:
-                # 人脸融合的图片文件名
-                result_imgfile1 = utils.dataURL_to_merge_face_file(faceToken, '赫本.jpg', dataURL)
-                result_imgfile2 = utils.dataURL_to_merge_face_file(faceToken, '哪吒.jpg', dataURL)
-                result_imgfile3 = utils.dataURL_to_merge_face_file(faceToken, '敖丙.jpg', dataURL)
-                
-                result_imgfiles = [result_imgfile1, result_imgfile2, result_imgfile3]
-            except Exception as e:
-                return redirect('/error/dataURL_to_merge_face出错：{}/'.format(e))
-
+            # 保存图片，获取裁剪后的图片列表
+            crop_imgs = utils.get_crop_filenames(dataURL, faces)
 
             try:
                 # 把结果存入session，然后跳转到/result/
@@ -155,6 +163,7 @@ def detect_camera(request):
                 request.session['praise_dicts'] = praise_dicts
                 request.session['anim_file'] = anim_file
                 request.session['result_imgfiles'] = result_imgfiles
+                request.session['crop_imgs'] = crop_imgs
 
                 # 是否显示过这个结果，如果显示过应该认为session里的值是过期的
                 request.session['result_expired'] = False
@@ -225,13 +234,27 @@ def result(request):
         
         # print(request.session.get('face_display_dict', None))
         # print(request.session.get('audio_files', None))
-        print(request.session.get('praise_dicts', None))
+        # print(request.session.get('praise_dicts', None))
+
+        face_display_dict = request.session.get('face_display_dict', None)
+        praise_dicts = request.session.get('praise_dicts', None)
+        crop_imgs = request.session.get('crop_imgs', None)
         
+        print(crop_imgs)
+        
+        res = {}
+        
+        for key, val in face_display_dict.items():
+            res[key] = zip(val, praise_dicts[key], crop_imgs)
+            # print(list(res[key]))
+                
+        # print(res)
         
         context = {}
-        context['face_display_dict'] = request.session.get('face_display_dict',None)
+        context['face_display_dict'] = res
+        
         context['audio_files'] = request.session.get('audio_files', None)
-        context['praise_dicts'] = request.session.get('praise_dicts', None)
+        # context['praise_dicts'] = 
         context['anim_file'] = request.session.get('anim_file', None)
         context['result_imgfiles'] = request.session.get('result_imgfiles', None)
 

@@ -28,20 +28,11 @@
                 <li><img class="resimg" src="{% static 'files/' %}{{ anim_file }}"></li>
             </ul>
         </div>
-        <div class="box_container" style="position: absolute;left: 5%;top: 15%;background-color: #e5f7ff;">
-            {% for age_gender in face_display_dict.age_gender %}
-                <div class="display_title">年龄：{{ age_gender.0 }} 性别：{{ age_gender.1 }}</div>  
-            {% endfor %}
-            {% for praise_age in praise_dicts.age %}
-                <span class="display_content">{{praise_age}}</span>
-            {% endfor %}
-        </div>
-        <div class="display_container" style="position: absolute;left: 5%;top: 15%;">
-            {% for age_gender in face_display_dict.age_gender %}
-                <div class="display_title">年龄：{{ age_gender.0 }} 性别：{{ age_gender.1 }}</div>
-            {% endfor %}
-            {% for praise_age in praise_dicts.age %}
-                <span class="display_content">{{praise_age}}</span>
+        <div class="box_container" style="position: absolute;left: 5%;top: 15%;background-color: rgba(229, 247, 252, 0.5);">
+            {% for age in face_display_dict.age %}
+                <img class='cropimg' src="{% static 'files/' %}{{ age.2 }}">
+                <span class="display_title">年龄：{{ age.0.0 }} 性别：{{ age.0.1 }}</span>  
+                <p class="display_content">{{ age.1 }}</p>
             {% endfor %}
         </div>
         {% for audio_item in audio_files.values %}
@@ -59,27 +50,18 @@
     <img class="bg" src="{% static 'images/bg4.jpg'%} " style="opacity: 0.8;filter: blur(3)">
         <div id="cube2" class="cubeBox" style="position: absolute;top: 40%;right: 70%; cursor: pointer;">
             <!--小立方体-->
-            <ul class="cube" title="把你变成赫本！" style="cursor: pointer;">
+            <ul class="cube" title="把你变成胡歌！" style="cursor: pointer;">
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.0 }}"></li>
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.0 }}"></li>
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.0 }}"></li>
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.0 }}"></li>
             </ul>
         </div>
-        <div class="box_container" style="position: absolute;left: 50%;top: 20%;background-color: #ffe6cc;">
+        <div class="box_container" style="position: absolute;left: 50%;top: 20%;background-color: rgb(255, 230, 204, 0.5);">
             {% for beauty in face_display_dict.beauty %}
-                <div class="display_title">颜值：{{ beauty }}</div>
-            {% endfor %}
-            {% for praise_beauty in praise_dicts.beauty %}
-                <span class="display_content">{{praise_beauty}}</span>
-            {% endfor %}
-        </div>
-        <div class="display_container" style="position: absolute;left: 50%;top: 20%;">
-            {% for beauty in face_display_dict.beauty %}
-            <div class="display_title">颜值：{{ beauty }}</div>
-            {% endfor %}
-            {% for praise_beauty in praise_dicts.beauty %}
-                <span class="display_content">{{praise_beauty}}</span>
+                <img class='cropimg' src="{% static 'files/' %}{{ beauty.2 }}">
+                <span class="display_title">颜值：{{ beauty.0 }}</span>
+                <p class="display_content">{{beauty.1}}</p>
             {% endfor %}
         </div>
 <!--        {% for audio in audio_files %}-->
@@ -99,27 +81,18 @@
     <img class="bg" src="{% static 'images/bg5.jpg'%} " style="opacity: 0.8;filter: blur(3)">
         <div id="cube3" class="cubeBox" style="position: absolute;top: 35%;right: 10%;">
             <!--小立方体-->
-            <ul class="cube"  title="把你变成哪吒！"  style="cursor: pointer;">
+            <ul class="cube"  title="把你变成赫本！"  style="cursor: pointer;">
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.1 }}"></li>
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.1 }}"></li>
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.1 }}"></li>
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.1 }}"></li>
             </ul>
         </div>
-        <div class="box_container" style="position: absolute;left: 5%;top: 15%;background-color: #e5f7ff;">
+        <div class="box_container" style="position: absolute;left: 5%;top: 15%;background-color: rgba(229, 247, 255, 0.5);">
             {% for expression in face_display_dict.expression %}
-                <div class="display_title">表情：{{ expression }}</div>
-            {% endfor %}
-            {% for praise_expression in praise_dicts.expression %}
-                <span class="display_content">{{praise_expression}}</span>
-            {% endfor %}
-        </div>
-        <div class="display_container" style="position: absolute;left: 5%;top: 15%;">
-            {% for expression in face_display_dict.expression %}
-                <div class="display_title">表情：{{ expression }}</div>
-            {% endfor %}
-            {% for praise_expression in praise_dicts.expression %}
-                <span class="display_content">{{praise_expression}}</span>
+                <img class='cropimg' src="{% static 'files/' %}{{ expression.2 }}">
+                <span class="display_title">表情：{{ expression.0 }}</span>
+                <p class="display_content">{{ expression.1 }}</p>
             {% endfor %}
         </div>
         <button id="musBtn3" style="position:absolute;top:5%;right:15" type="button" class="btn btn-default" onClick="play3()" aria-label="Left Align">
@@ -133,27 +106,18 @@
     <img class="bg" src="{% static 'images/bg1.jpg'%} ">
     <!--小立方体-->
         <div id="cube4" class="cubeBox" style="position: absolute;top: 40%;right: 70%; ">
-            <ul class="cube"  title="把你变成敖丙！" style="cursor: pointer;">
+            <ul class="cube"  title="把你变成彭于晏！" style="cursor: pointer;">
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.2 }}"></li>
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.2 }}"></li>
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.2 }}"></li>
                 <li><img class="resimg" src="{% static 'files/' %}{{ result_imgfiles.2 }}"></li>
             </ul>
         </div>
-        <div class="box_container" style="position: absolute;left: 60%;top: 20%;background-color: #e5f7ff;">
+        <div class="box_container" style="position: absolute;left: 53%;top: 20%;background-color: rgb(229, 247, 255, 0.5);">
             {% for glasses in face_display_dict.glasses %}
-                <div class="display_title">眼镜：{{ glasses }}</div>
-            {% endfor %}
-            {% for praise_glasses in praise_dicts.glasses %}
-                <span class="display_content">{{praise_glasses}}</span>
-            {% endfor %}
-        </div>
-        <div class="display_container" style="position: absolute;left: 60%;top: 20%;">
-            {% for glasses in face_display_dict.glasses %}
-                <div class="display_title">眼镜：{{ glasses }}</div>
-            {% endfor %}
-            {% for praise_glasses in praise_dicts.glasses %}
-                <span class="display_content">{{praise_glasses}}</span>
+                <img class='cropimg' src="{% static 'files/' %}{{ glasses.2 }}">
+                <span class="display_title">眼镜：{{ glasses.0}}</span>
+                <p class="display_content">{{ glasses.1 }}</p>
             {% endfor %}
         </div>
         <button id="musBtn4" style="position:absolute;top:5%;right:15" type="button" class="btn btn-default" onClick="play4()" aria-label="Left Align">
