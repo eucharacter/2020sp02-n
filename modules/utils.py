@@ -161,7 +161,7 @@ def _faces_to_audio_txt_dict(faces):
 def _save_file(bytes: bytes, suffix):
     """给定文件二进制流和后缀名（不带点），保存文件在static/files，返回文件名('xxx.mp3')
     """
-    folderName = os.path.join(os.getcwd(), 'static/files/')
+    folderName = os.path.join(os.getcwd(), '2020sp02-n/2020sp02/static/files/')
     
     fileName = '{}.{}'.format(uuid.uuid4(), suffix)
     fileFullName = os.path.join(folderName, fileName)
